@@ -63,12 +63,12 @@ def add_venue():
         root_element = None
 
     address = request.form["address"]
-    comments = request.form["comments"]
+    comment = request.form["comments"]
     rental_fee = request.form["rental_fee"]
 
     query = f"""
     INSERT INTO venue (address, comments, rental_fee)
-    VALUES ('{address}', '{comments}', '{rental_fee}')
+    VALUES ('{address}', '{comment}', '{rental_fee}')
     """
     cur = mysql.connection.cursor()
     cur.execute(query)
@@ -96,10 +96,27 @@ def retrieve_venue():
         return Response(generate_xml_response(data, root_element=root_element), mimetype="text/xml")
     else:
         return jsonify(data)
+    
+@app.route("/retrieve/<int:id>", methods=["GET"])
+def retrieve_venue_by_id(id):
+    format = request.args.get("format")
+    if format == "xml":
+        root_element = "venue"
+    else:
+        root_element = None
+
+    query = f"SELECT * FROM venue WHERE id = {id}"
+    data = data_fetch(query)
+
+    if format == "xml":
+        return Response(generate_xml_response(data, root_element=root_element), mimetype="text/xml")
+    else:
+        return jsonify(data)
 
 
-@app.route("/update", methods=["PUT"])
-def update_venue():
+
+@app.route("/update/<int:id>", methods=["PUT"])
+def update_venue_by_id(id):
     format = request.args.get("format")
     if format == "xml":
         root_element = "venue"
@@ -107,13 +124,13 @@ def update_venue():
         root_element = None
 
     address = request.form["address"]
-    comments = request.form["comments"]
+    comment = request.form["comments"]
     rental_fee = request.form["rental_fee"]
 
     query = f"""
     UPDATE venue
-    SET comments = '{comments}', rental_fee = '{rental_fee}'
-    WHERE address = '{address}'
+    SET address = '{address}', comments = '{comment}', rental_fee = '{rental_fee}'
+    WHERE id = {id}
     """
     cur = mysql.connection.cursor()
     cur.execute(query)
@@ -121,34 +138,37 @@ def update_venue():
     cur.close()
 
     if format == "xml":
-        return Response(generate_xml_response([{"address": address}]), mimetype="text/xml")
+        return Response(generate_xml_response([{"id": id}]), mimetype="text/xml")
     else:
-        return jsonify({"address": address})
+        return jsonify({"id": id})
 
 
-@app.route("/delete", methods=["DELETE"])
-def delete_venue():
+
+@app.route("/delete/<int:id>", methods=["DELETE"])
+def delete_venue_by_id(id):
     format = request.args.get("format")
     if format == "xml":
         root_element = "venue"
     else:
         root_element = None
 
-    address = request.form["address"]
+    query = f"SELECT * FROM venue WHERE id = {id}"
+    data = data_fetch(query)
 
-    query = f"""
-    DELETE FROM venue
-    WHERE address = '{address}'
-    """
+    if not data:
+        return Response("Venue not found", status=404)
+
+    query = f"DELETE FROM venue WHERE id = {id}"
     cur = mysql.connection.cursor()
     cur.execute(query)
     mysql.connection.commit()
     cur.close()
 
     if format == "xml":
-        return Response(generate_xml_response([{"address": address}]), mimetype="text/xml")
+        return Response(generate_xml_response([{"id": id}]), mimetype="text/xml")
     else:
-        return jsonify({"address": address})
+        return jsonify({"id": id})
+
 
 
 if __name__ == "__main__":

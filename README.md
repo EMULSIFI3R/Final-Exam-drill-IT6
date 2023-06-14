@@ -2,23 +2,28 @@
 Event Planner CRUD API
 This is a simple Flask-based CRUD API for managing venue information in an event planner application. It allows users to perform basic operations such as adding, retrieving, updating, and deleting venue records.
 
-Requirements
+----->Requirements
 To run this application, you need to have the following:
 
-Python
-Flask
-Flask-MySQLdb
-MySQL Server
-Installation
+*Python
+*Flask
+*Flask-MySQLdb
+*MySQL Server
+
+
+----->Installation
+
 Clone the repository to your local machine.
 Install the required dependencies by running pip install -r requirements.txt.
 Configure the MySQL connection settings in the api.py file.
 Create a MySQL database named mydb.
 Run the Flask application using the command python api.py.
 The API will be accessible at http://localhost:5000/.
-Endpoints
-The API provides the following endpoints:
 
+
+----->Endpoints
+
+The API provides the following endpoints:
 GET /: Displays the available operations.
 POST /add: Adds a new venue record.
 GET /retrieve: Retrieves all venue records.
